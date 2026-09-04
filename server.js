@@ -1,6 +1,8 @@
 const express = require("express");
 
 const app = express();
+app.use(express.json());
+
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
@@ -16,6 +18,23 @@ app.get("/health", (req, res) => {
   res.status(200).json({
     ok: true,
     service: "nyvara-webmcp"
+  });
+});
+
+app.get("/mcp", (req, res) => {
+  res.status(200).json({
+    name: "NYVARA",
+    service: "WebMCP",
+    status: "ready",
+    message: "Endpoint MCP de NYVARA disponible"
+  });
+});
+
+app.post("/mcp", (req, res) => {
+  res.status(200).json({
+    ok: true,
+    service: "nyvara-webmcp",
+    received: req.body || {}
   });
 });
 
