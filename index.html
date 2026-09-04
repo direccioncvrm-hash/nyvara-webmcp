@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NYVARA WebMCP</title>
+</head>
+
+<body>
+  <h1>NYVARA</h1>
+  <h2>Inteligencia contextual para organizar y priorizar</h2>
+
+  <p>
+    NYVARA demuestra cómo un agente puede utilizar WebMCP
+    para trabajar con información estructurada directamente
+    desde una página web.
+  </p>
+
+  <h3>Estado WebMCP</h3>
+  <p id="estado">Comprobando WebMCP...</p>
+
+  <h3>Demostración</h3>
+  <p>
+    Herramientas disponibles para consultar el estado de NYVARA,
+    priorizar pendientes y organizar contexto.
+  </p>
+
+  <script>
+    async function iniciarWebMCP() {
+      const mc = document.modelContext || navigator.modelContext;
+
+      if (!mc || !mc.registerTool) {
+        document.getElementById("estado").textContent =
+          "WebMCP requiere un navegador compatible o WebMCP habilitado.";
+        return;
+      }
+
+      await mc.registerTool({
+        name: "nyvara_status",
+        description: "Obtiene el estado actual de la demostración NYVARA.",
+        inputSchema: {
+          type: "object",
+          properties: {}
+        },
+        annotations: {
+          readOnlyHint: true
+        },
+        execute: async () => {
+          return {
+            name: "NYVARA",
+            status: "online",
+            service: "WebMCP",
+            message: "NYVARA está disponible mediante WebMCP"
+          };
+        }
+      });
+
+      await mc.registerTool({
+        name: "priorizar_pendientes",
+        description:
+          "Ordena una lista de pendientes según su prioridad y explica qué atender primero.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            pendientes: {
+              type: "array",
+              description: "Lista de pendientes que NYVARA debe priorizar.",
+              items: {
+                type: "string"
+              }
+            }
+          },
+          required: ["pendientes"]
+        },
+        annotations: {
+          readOnlyHint: true
+        },
+        execute: async ({ pendientes }) => {
+          return {
+            total: pendientes.length,
+            prioridad: pendientes,
+            recomendacion:
+              pendientes.length
+                ? `Atender primero: ${pendientes[0]}`
+                : "No existen pendientes para priorizar."
+          };
+        }
+      });
+
+      await mc.registerTool({
+        name: "organizar_contexto",
+        description:
+          "Estructura información de una situación en objetivo, contexto y siguiente acción.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            objetivo: {
+              type: "string",
+              description: "Resultado que la persona quiere conseguir."
+            },
+            contexto: {
+              type: "string",
+              description: "Información relevante para tomar la decisión."
+            }
+          },
+          required: ["objetivo", "contexto"]
+        },
+        annotations: {
+          readOnlyHint: true
+        },
+        execute: async ({ objetivo, contexto }) => {
+          return {
+            objetivo,
+            contexto,
+            siguiente_accion:
+              "Revisar el contexto disponible y determinar la acción útil inmediata."
+          };
+        }
+      });
+
+      document.getElementById("estado").textContent =
+        "NYVARA WebMCP activo — 3 herramientas registradas.";
+    }
+
+    iniciarWebMCP().catch((error) => {
+      document.getElementById("estado").textContent =
+        "Error al iniciar WebMCP: " + error.message;
+    });
+  </script>
+</body>
+</html>
