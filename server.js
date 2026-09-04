@@ -41,3 +41,4 @@ app.post("/mcp", (req, res) => {
 app.listen(PORT, () => {
   console.log(`NYVARA WebMCP activo en puerto ${PORT}`);
 });
+// NYVARA MCP V01
